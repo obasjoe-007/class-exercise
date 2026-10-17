@@ -70,7 +70,7 @@ spec:
         version: v1
         company_name: webforx-tech
     spec:
-      serviceAccountName: espresso_shop
+      serviceAccountName: espresso-shop
       automountServiceAccountToken: false
       volumes:
       - name: shared-data
@@ -114,49 +114,49 @@ spec:
         - name: ProductCatalogUrl
           valueFrom:
             configMapKeyRef:
-              name: espresso_shop_config
+              name: espresso-shop-config
               key: ProductCatalog_Url
         - name: ReviewsUrl
           valueFrom:
             configMapKeyRef:
-              name: espresso_shop_config
+              name: espresso-shop-config
               key: Reviews_Url
-        - name: Authentication__AdminEmail
+        - name: Authentication-AdminEmail
           valueFrom:
             secretKeyRef:
               name: espresso-shop-auth
               key: admin_email
-        - name: Authentication__AdminPassword
+        - name: Authentication-AdminPassword
           valueFrom:
             secretKeyRef:
               name: espresso-shop-auth
               key: admin_password
-        - name: Authentication__UserEmail
+        - name: Authentication-UserEmail
           valueFrom:
             secretKeyRef:
               name: espresso-shop-auth
               key: user_email
-        - name: Authentication__UserPassword
+        - name: Authentication-UserPassword
           valueFrom:
             secretKeyRef:
               name: espresso-shop-auth
               key: user_password
         resources:
           requests:
-            cpu: 500m
-            memory: 256Mi
-          limits:
             cpu: 250m
             memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: espresso-shop-web-svc
-  namespace: expresso-shop
+  namespace: espresso-shop
 spec:
   selector:
-    app: espresso_shop-web
+    app: espresso-shop-web
   type: ClusterIP
   ports:
   - port: 8090
@@ -167,12 +167,12 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: espresso-shop-web
-  namespace: expresso_shop
+  namespace: espresso-shop
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: espresso_shop-web
+    name: espresso-shop-web
   minReplicas: 1
   maxReplicas: 5
   metrics:
@@ -190,7 +190,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: espresso-shop-product-catalog
-  namespace: expresso-shop
+  namespace: espresso-shop
 spec:
   replicas: 1
   selector:
@@ -203,12 +203,12 @@ spec:
         version: v1
         company_name: webforx-tech
     spec:
-      serviceAccountName: espresso_shop
+      serviceAccountName: espresso-shop
       automountServiceAccountToken: false
       volumes:
       - name: shared-data
         persistentVolumeClaim:
-          claimName: espresso_shop-data
+          claimName: espresso-shop-data
       topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
@@ -255,10 +255,10 @@ kind: Service
 apiVersion: v1
 metadata:
   name: espresso-shop-product-catalog-svc
-  namespace: expresso-shop
+  namespace: espresso-shop
 spec:
   selector:
-    app: espresso_shop-product_catalog
+    app: espresso-shop-product-catalog
   type: ClusterIP
   ports:
   - port: 8091
@@ -269,7 +269,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: espresso-shop-product-catalog
-  namespace: expresso-shop
+  namespace: espresso-shop
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -293,7 +293,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: espresso-shop-reviews-v1
-  namespace: expresso-shop
+  namespace: espresso-shop
 spec:
   replicas: 1
   selector:
@@ -307,7 +307,7 @@ spec:
         version: v1
         company_name: webforx-tech
     spec:
-      serviceAccountName: espresso_shop
+      serviceAccountName: espresso-shop
       automountServiceAccountToken: false
       volumes:
       - name: shared-data
@@ -326,7 +326,7 @@ spec:
         imagePullPolicy: IfNotPresent
         name: espresso-shop-reviews
         ports:
-        - containerPort: 80220
+        - containerPort: 80
           name: http
         volumeMounts:
         - name: shared-data
@@ -369,7 +369,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: espresso-shop-reviews-v2
-  namespace: expresso
+  namespace: espresso-shop
 spec:
   replicas: 1
   selector:
@@ -383,7 +383,7 @@ spec:
         version: v2
         company_name: webforx-tech
     spec:
-      serviceAccountName: espresso_shop
+      serviceAccountName: espresso-shop
       automountServiceAccountToken: false
       volumes:
       - name: shared-data
@@ -460,7 +460,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: espresso_shop-reviews
+    name: espresso-shop-reviews
   minReplicas: 1
   maxReplicas: 5
   metrics:
