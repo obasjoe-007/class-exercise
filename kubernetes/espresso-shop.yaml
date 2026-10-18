@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: espresso-shop
+  name: expresso-shop
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: espresso-shop-config
-  namespace: espresso-shop
+  namespace: expresso-shop
 data:
   ProductCatalogUrl: "http://espresso-shop-product-catalog-svc:8091"
   ReviewsUrl: "http://espresso-shop-reviews-svc:8092"
@@ -18,7 +18,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: espresso-shop
-  namespace: espresso-shop
+  namespace: expresso-shop
   labels:
     company_name: webforx-tech
 automountServiceAccountToken: false
@@ -27,22 +27,22 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: espresso-shop-data
-  namespace: espresso-shop
+  namespace: expresso-shop
   labels:
     company_name: webforx-tech
 spec:
   accessModes:
-  - ReadWriteMany
-  storageClassName: azurefile-csi
+  - ReadWriteOnce
+  storageClassName: local-storage
   resources:
     requests:
-      storage: 2000Gi
+      storage: 100Gi
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: espresso-shop-auth
-  namespace: espresso-shop
+  namespace: expresso-shop
 type: Opaque
 stringData:
   admin-email: "admin@example.com"
@@ -57,7 +57,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: espresso-shop-web
-  namespace: espresso-shop
+  namespace: expresso-shop
 spec:
   replicas: 1
   selector:
@@ -84,12 +84,12 @@ spec:
           matchLabels:
             company_name: webforx-tech
       containers:
-      - image: hossambarakat/espresso-shop-web:001
+      - image: hossambarakat/espresso-shop-web
         # imagePullPolicy: Always
         imagePullPolicy: IfNotPresent
         name: espresso-shop-web
         ports:
-        - containerPort: 8080
+        - containerPort: 80
           name: http
         volumeMounts:
         - name: shared-data
@@ -153,7 +153,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: espresso-shop-web-svc
-  namespace: espresso-shop
+  namespace: expresso-shop
 spec:
   selector:
     app: espresso-shop-web
@@ -167,7 +167,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: espresso-shop-web
-  namespace: espresso-shop
+  namespace: expresso-shop
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -190,7 +190,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: espresso-shop-product-catalog
-  namespace: espresso-shop
+  namespace: expresso-shop
 spec:
   replicas: 1
   selector:
@@ -217,12 +217,12 @@ spec:
           matchLabels:
             company_name: webforx-tech
       containers:
-      - image: hossambarakat/espresso-shop-product-catalog:008
+      - image: hossambarakat/espresso-shop-product-catalog
         # imagePullPolicy: Always
         imagePullPolicy: IfNotPresent
         name: espresso-shop-product-catalog
         ports:
-        - containerPort: 8020
+        - containerPort: 80
           name: http
         volumeMounts:
         - name: shared-data
@@ -255,7 +255,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: espresso-shop-product-catalog-svc
-  namespace: espresso-shop
+  namespace: expresso-shop
 spec:
   selector:
     app: espresso-shop-product-catalog
@@ -269,7 +269,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: espresso-shop-product-catalog
-  namespace: espresso-shop
+  namespace: expresso-shop
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -293,7 +293,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: espresso-shop-reviews-v1
-  namespace: espresso-shop
+  namespace: expresso-shop
 spec:
   replicas: 1
   selector:
@@ -321,7 +321,7 @@ spec:
           matchLabels:
             company_name: webforx-tech
       containers:
-      - image: hossambarakat/espresso-shop-reviews:5001
+      - image: hossambarakat/espresso-shop-reviews
         # imagePullPolicy: Always
         imagePullPolicy: IfNotPresent
         name: espresso-shop-reviews
@@ -369,7 +369,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: espresso-shop-reviews-v2
-  namespace: espresso-shop
+  namespace: expresso-shop
 spec:
   replicas: 1
   selector:
@@ -428,7 +428,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: espresso-shop-config
-              key: Reviews_VersionV2
+              key: ReviewsVersionV2
         resources:
           requests:
             cpu: 250m
@@ -441,7 +441,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: espresso-shop-reviews-svc
-  namespace: espresso-shop
+  namespace: expresso-shop
 spec:
   selector:
     app: espresso-shop-reviews
@@ -455,7 +455,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: espresso-shop-reviews-v1
-  namespace: espresso-shop
+  namespace: expresso-shop
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -475,7 +475,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: espresso-shop-reviews-v2
-  namespace: espresso-shop
+  namespace: expresso-shop
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
